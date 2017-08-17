@@ -1,0 +1,53 @@
+{
+	"name": "videos-cli",
+	"version": "0.0.0",
+	"description": "Download videos from YouTube",
+	"license": "MIT",
+	"repository": "itaisteinherz/videos-cli",
+	"author": {
+		"name": "Itai Steinherz",
+		"email": "itaisteinherz@gmail.com",
+		"url": "github.com/itaisteinherz"
+	},
+	"bin": {
+		"videos": "cli.js"
+	},
+	"engines": {
+		"node": ">=4"
+	},
+	"scripts": {
+		"test": "xo && ava"
+	},
+	"files": [
+		"index.js",
+		"cli.js"
+	],
+	"keywords": [
+		"cli-app",
+		"cli",
+		"youtube",
+		"video",
+		"playlist",
+		"download"
+	],
+	"dependencies": {
+		"chalk": "^2.1.0",
+		"is-playlist": "^1.0.0",
+		"meow": "^3.7.0",
+		"progress": "^2.0.0",
+		"videos": "https://github.com/itaisteinherz/videos"
+	},
+	"devDependencies": {
+		"ava": "^0.20.0",
+		"execa": "^0.8.0",
+		"xo": "^0.18.2"
+	},
+	"xo": {
+		"rules": {
+			"quotes": [
+				"error",
+				"double"
+			]
+		}
+	}
+}
