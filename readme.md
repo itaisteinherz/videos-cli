@@ -2,13 +2,15 @@
 
 > Download videos from YouTube
 
-* Mention of `videos`
 
-## CLI
+## Install
 
 ```
 $ npm install --global videos-cli
 ```
+
+
+## Usage
 
 ```
 $ videos --help
@@ -23,6 +25,11 @@ Examples
   $ videos https://youtu.be/q6EoRBvdVPQ AIzaSyDIWDAP9xcj2cVu6TCY8z2uVH6Nb7TqUIM ~/Videos
   $ videos --max=1 https://youtu.be/q6EoRBvdVPQ?list=PL7XlqX4npddfrdpMCxBnNZXg2GFll7t5y AIzaSyDIWDAP9xcj2cVu6TCY8z2uVH6Nb7TqUIM ~/Music
 ```
+
+
+## Related
+
+- [videos](https://github.com/itaisteinherz/videos) - API for this module
 
 
 ## License

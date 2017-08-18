@@ -35,7 +35,7 @@
 		"is-playlist": "^1.0.0",
 		"meow": "^3.7.0",
 		"progress": "^2.0.0",
-		"videos": "https://github.com/itaisteinherz/videos"
+		"videos": "^1.0.0"
 	},
 	"devDependencies": {
 		"ava": "^0.20.0",
