@@ -26,10 +26,10 @@ const opts = cli.flags;
 function showInfo(download) {
 	let bar;
 
-	const {downloadStream, videoTitle, videoUrl} = download;
+	const downloadStream = download.downloadStream;
 
 	downloadStream.on("response", res => {
-		bar = new ProgressBar(`Downloading ${chalk.blue(videoTitle)} [:bar] :percent `, {
+		bar = new ProgressBar(`Downloading ${chalk.blue(download.videoTitle)} [:bar] :percent `, {
 			complete: String.fromCharCode(0x2588),
 			total: parseInt(res.headers["content-length"], 10)
 		});
@@ -40,7 +40,7 @@ function showInfo(download) {
 	});
 
 	downloadStream.on("finish", () => {
-		console.log(`Finished downloading ${chalk.blue(videoTitle)} (${chalk.underline(videoUrl)})\n`);
+		console.log(`Finished downloading ${chalk.blue(download.videoTitle)} (${chalk.underline(download.videoUrl)})\n`);
 	});
 }
 
