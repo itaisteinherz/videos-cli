@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 "use strict";
 const meow = require("meow");
-const isPlaylist = require("is-playlist");
-const ProgressBar = require("progress");
+const PQueue = require("p-queue");
 const chalk = require("chalk");
+const ora = require("ora");
 const videos = require("videos");
 
 const cli = meow(`
@@ -24,33 +24,34 @@ const videosPath = cli.input[2];
 const opts = cli.flags;
 
 function showInfo(download) {
-	let bar;
+	const text = `Downloading ${chalk.blue(download.videoTitle)}`;
 
-	const downloadStream = download.downloadStream;
+	const spinner = ora(text).start();
+	spinner.color = "blue";
 
-	downloadStream.on("response", res => {
-		bar = new ProgressBar(`Downloading ${chalk.blue(download.videoTitle)} [:bar] :percent `, {
-			complete: String.fromCharCode(0x2588),
-			total: parseInt(res.headers["content-length"], 10)
-		});
+	download.onProgress(progress => {
+		spinner.text = `${text}  ${chalk.grey(`${Math.floor(progress * 100)}%`)}`;
 	});
 
-	downloadStream.on("data", data => {
-		bar.tick(data.length);
+	download.then(() => { // TODO: Stop the bar ticking immidiately when this event is called (or tick it to 100% before logging), to avoid bugs were the cli says "Finished downloading" yet the bar keeps on ticking.
+		spinner.succeed(`Finished downloading ${chalk.blue(download.videoTitle)} ${chalk.grey(`(${chalk.underline(download.videoUrl)})`)}`);
 	});
 
-	downloadStream.on("finish", () => {
-		console.log(`Finished downloading ${chalk.blue(download.videoTitle)} (${chalk.underline(download.videoUrl)})\n`);
+	download.catch(err => { // TODO: Use `p-timeout` to timeout if the download request takes too long to process.
+		spinner.fail(`Error downloading ${chalk.blue(download.videoTitle)}:\n${chalk.red(err)}`);
 	});
 }
 
-videos(url, apiKey, videosPath, opts)
-	.then(downloads => {
-		if (isPlaylist(url)) {
-			for (const download of downloads) {
-				showInfo(download);
-			}
-		} else {
-			showInfo(downloads);
-		}
-	});
+const queue = new PQueue({concurrency: 2}); // TODO: Make the concurrency constant an option. Also, try to only get the info for 2 videos at a time for better efficiency. Also, check if I should move the concurrency option to `videos`.
+
+const downloadPromise = videos(url, apiKey, videosPath, opts);
+
+downloadPromise.then(downloads => { // TODO: Maybe add support for downloading livestreams real-time.
+	for (const download of downloads) {
+		queue.add(() => { // TODO: Maybe move to using `listr` for nicer output when downloading a large amount of videos.
+			showInfo(download); // TODO: Maybe add support for streaming the download directly to stdout instead of saving it to a file.
+
+			return download;
+		});
+	}
+});

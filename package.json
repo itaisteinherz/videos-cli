@@ -19,7 +19,6 @@
 		"test": "xo && ava"
 	},
 	"files": [
-		"index.js",
 		"cli.js"
 	],
 	"keywords": [
@@ -32,9 +31,9 @@
 	],
 	"dependencies": {
 		"chalk": "^2.1.0",
-		"is-playlist": "^1.0.0",
 		"meow": "^3.7.0",
-		"progress": "^2.0.0",
+		"ora": "^1.3.0",
+		"p-queue": "^2.2.0",
 		"videos": "^1.0.0"
 	},
 	"devDependencies": {
