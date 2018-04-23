@@ -44,13 +44,13 @@ function showInfo(download) {
 		spinner.text = `${text}  ${chalk.grey(`${Math.floor(progress * 100)}%`)}`;
 	});
 
-	download.then(() => { // TODO: Stop the bar ticking immidiately when this event is called (or tick it to 100% before logging), to avoid bugs were the cli says "Finished downloading" yet the bar keeps on ticking.
-		spinner.succeed(`Finished downloading ${chalk.blue(download.videoTitle)} ${chalk.grey(`(${chalk.underline(download.videoUrl)})`)}`);
-	});
-
-	download.catch(err => { // TODO: Use `p-timeout` to timeout if the download request takes too long to process.
-		spinner.fail(`Error downloading ${chalk.blue(download.videoTitle)}:\n${chalk.red(err)}`);
-	});
+	return download
+		.then(() => { // TODO: Stop the bar ticking immidiately when this event is called (or tick it to 100% before logging), to avoid bugs were the cli says "Finished downloading" yet the bar keeps on ticking.
+			spinner.succeed(`Finished downloading ${chalk.blue(download.videoTitle)} ${chalk.grey(`(${chalk.underline(download.videoUrl)})`)}`);
+		})
+		.catch(err => { // TODO: Use `p-timeout` to timeout if the download request takes too long to process.
+			spinner.fail(`Error downloading ${chalk.blue(download.videoTitle)}:\n${chalk.red(err.stack)}\n`);
+		});
 }
 
 const queue = new PQueue({concurrency: 2}); // TODO: Make the concurrency constant an option. Also, try to only get the info for 2 videos at a time for better efficiency. Also, check if I should move the concurrency option to `videos`.
@@ -58,11 +58,5 @@ const queue = new PQueue({concurrency: 2}); // TODO: Make the concurrency consta
 const downloadPromise = videos(url, apiKey, videosPath, opts);
 
 downloadPromise.then(downloads => { // TODO: Maybe add support for downloading livestreams real-time.
-	for (const download of downloads) {
-		queue.add(() => { // TODO: Maybe move to using `listr` for nicer output when downloading a large amount of videos.
-			showInfo(download); // TODO: Maybe add support for streaming the download directly to stdout instead of saving it to a file.
-
-			return download;
-		});
-	}
+	queue.addAll(downloads.map(download => () => showInfo(download))); // TODO: Maybe move to using `listr` for nicer output when downloading a large amount of videos. Also, maybe add support for streaming the download directly to stdout instead of saving it to a file.
 });
